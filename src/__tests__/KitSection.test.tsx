@@ -14,22 +14,6 @@ const makeSection = (overrides: Partial<KitSectionType> = {}): KitSectionType =>
   ...overrides,
 })
 
-function setup(section = makeSection()) {
-  const props = {
-    section,
-    days: 7,
-    onToggleItem: vi.fn(),
-    onToggleAll: vi.fn(),
-    onUpdateQuantity: vi.fn(),
-    onUpdatePerDay: vi.fn(),
-    onRemoveItem: vi.fn(),
-    onRemoveSection: vi.fn(),
-    onAddItem: vi.fn(),
-  }
-  render(<KitSection {...props} />)
-  return props
-}
-
 describe('KitSection', () => {
   it('renders the section title and all items', () => {
     const props = {
