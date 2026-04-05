@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface AppHeaderProps {
   days: number;
@@ -7,6 +7,7 @@ interface AppHeaderProps {
   totalItems: number;
   onReset: () => void;
   onExport: () => void;
+  onImport: (file: File) => void;
 }
 
 export default function AppHeader({
@@ -16,8 +17,10 @@ export default function AppHeader({
   totalItems,
   onReset,
   onExport,
+  onImport,
 }: AppHeaderProps) {
   const [displayDays, setDisplayDays] = useState(String(days));
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setDisplayDays(String(days));
@@ -59,9 +62,28 @@ export default function AppHeader({
           <button className="btn btn--ghost" onClick={onReset}>
             Reset
           </button>
+          <button
+            className="btn btn--ghost"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Import JSON
+          </button>
           <button className="btn btn--primary" onClick={onExport}>
             Export JSON
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,application/json"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onImport(file);
+                e.target.value = "";
+              }
+            }}
+          />
         </div>
       </div>
       <div className="progress">

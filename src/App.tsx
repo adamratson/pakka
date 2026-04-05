@@ -4,7 +4,7 @@ import type { KitSection } from "./data";
 import AppHeader from "./components/AppHeader";
 import KitSectionComponent from "./components/KitSection";
 import { AddSectionForm, AddSectionButton } from "./components/AddSectionForm";
-import { exportToJson } from "./utils/export";
+import { exportToJson, importFromJson } from "./utils/export";
 import "./App.css";
 
 export default function App() {
@@ -107,6 +107,15 @@ export default function App() {
     setSections((prev) => prev.filter((s) => s.id !== sectionId));
   }
 
+  function handleImport(file: File) {
+    importFromJson(file)
+      .then(({ sections, days }) => {
+        setSections(sections);
+        setDays(days);
+      })
+      .catch((err: Error) => alert(`Import failed: ${err.message}`));
+  }
+
   function resetAll() {
     setSections((prev) =>
       prev.map((s) => ({
@@ -125,6 +134,7 @@ export default function App() {
         totalItems={allItems.length}
         onReset={resetAll}
         onExport={() => exportToJson(sections, days)}
+        onImport={handleImport}
       />
 
       <main className="app-main">
