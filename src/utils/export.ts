@@ -103,7 +103,7 @@ export function importFromJson(file: File): Promise<ImportResult> {
           const title =
             typeof raw.listTitle === "string" && raw.listTitle.trim()
               ? raw.listTitle.trim()
-              : "Bikepacking kit list";
+              : "Kit list";
 
           const listId = `list-${Date.now()}`;
           lists = [{ id: listId, title, sections, days }];

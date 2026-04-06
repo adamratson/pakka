@@ -26,7 +26,7 @@ export default function App() {
         // Old format exists, migrate it
         const migratedList: PackingList = {
           id: `list-${Date.now()}`,
-          title: oldTitle || "Bikepacking kit list",
+          title: oldTitle || "Kit list",
           sections: JSON.parse(oldSections),
           days: oldDays ? parseInt(oldDays, 10) : 7,
         };
@@ -41,7 +41,7 @@ export default function App() {
       return [
         {
           id: `list-${Date.now()}`,
-          title: "Bikepacking kit list",
+          title: "Kit list",
           sections: initialSections,
           days: 7,
         },
@@ -50,7 +50,7 @@ export default function App() {
       return [
         {
           id: `list-${Date.now()}`,
-          title: "Bikepacking kit list",
+          title: "Kit list",
           sections: initialSections,
           days: 7,
         },

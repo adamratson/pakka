@@ -16,7 +16,7 @@ test('shows the app title and initial sections', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Food & Drink' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Toiletries' })).toBeVisible()
   // Sidebar should be visible with the default list
-  await expect(page.getByRole('button', { name: 'Bikepacking kit list' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Kit list' })).toBeVisible()
 })
 
 test('can check and uncheck an item', async ({ page }) => {
@@ -171,7 +171,7 @@ test('cannot delete the last list', async ({ page }) => {
 })
 
 test('can rename a list by double-clicking', async ({ page }) => {
-  const listButton = page.getByRole('button', { name: 'Bikepacking kit list' })
+  const listButton = page.getByRole('button', { name: 'Kit list' })
   await listButton.dblclick()
   // Should show an input
   const input = page.locator('.sidebar__edit-input')
