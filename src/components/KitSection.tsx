@@ -26,6 +26,22 @@ const PlusIcon = () => (
   </svg>
 );
 
+const ChevronIcon = ({ collapsed }: { collapsed: boolean }) => (
+  <svg
+    viewBox="0 0 16 16"
+    fill="none"
+    style={{ transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+  >
+    <path
+      d="M6 4l4 4-4 4"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 interface KitSectionProps {
   section: KitSectionType;
   days: number;
@@ -33,9 +49,11 @@ interface KitSectionProps {
   onToggleAll: (checked: boolean) => void;
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   onUpdatePerDay: (itemId: string, perDay: boolean) => void;
+  onUpdateItemDetails: (itemId: string, updates: { title?: string; description?: string }) => void;
   onRemoveItem: (itemId: string) => void;
   onRemoveSection: () => void;
   onAddItem: (title: string, description: string) => void;
+  onRenameSection: (title: string) => void;
 }
 
 export default function KitSection({
@@ -45,12 +63,17 @@ export default function KitSection({
   onToggleAll,
   onUpdateQuantity,
   onUpdatePerDay,
+  onUpdateItemDetails,
   onRemoveItem,
   onRemoveSection,
   onAddItem,
+  onRenameSection,
 }: KitSectionProps) {
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleInput, setTitleInput] = useState(section.title);
 
   const allChecked =
     section.items.length > 0 && section.items.every((i) => i.checked);
@@ -63,10 +86,50 @@ export default function KitSection({
     setIsAddingItem(false);
   }
 
+  function commitTitleEdit() {
+    const trimmed = titleInput.trim();
+    if (trimmed && trimmed !== section.title) {
+      onRenameSection(trimmed);
+    }
+    setEditingTitle(false);
+  }
+
   return (
     <section className="kit-section">
       <div className="kit-section__header">
-        <h2 className="kit-section__title">{section.title}</h2>
+        <button
+          className="kit-section__collapse-btn"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? "Expand section" : "Collapse section"}
+          aria-label={`${isCollapsed ? "Expand" : "Collapse"} section ${section.title}`}
+        >
+          <ChevronIcon collapsed={isCollapsed} />
+        </button>
+        {editingTitle ? (
+          <input
+            className="kit-section__title-input"
+            type="text"
+            value={titleInput}
+            onChange={(e) => setTitleInput(e.target.value)}
+            onBlur={commitTitleEdit}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitTitleEdit();
+              if (e.key === "Escape") {
+                setTitleInput(section.title);
+                setEditingTitle(false);
+              }
+            }}
+            autoFocus
+          />
+        ) : (
+          <h2
+            className="kit-section__title"
+            onDoubleClick={() => setEditingTitle(true)}
+            title="Double-click to rename"
+          >
+            {section.title}
+          </h2>
+        )}
         <div className="kit-section__header-actions">
           {section.items.length > 0 && (
             <button
@@ -105,36 +168,41 @@ export default function KitSection({
         </div>
       </div>
 
-      <ul className="item-list">
-        {section.items.length === 0 && !isAddingItem && (
-          <li className="item-list__empty">No items yet</li>
-        )}
+      {!isCollapsed && (
+        <>
+          <ul className="item-list">
+            {section.items.length === 0 && !isAddingItem && (
+              <li className="item-list__empty">No items yet</li>
+            )}
 
-        {section.items.map((item) => (
-          <ItemRow
-            key={item.id}
-            item={item}
-            days={days}
-            onToggle={() => onToggleItem(item.id)}
-            onUpdateQuantity={(qty) => onUpdateQuantity(item.id, qty)}
-            onUpdatePerDay={(pd) => onUpdatePerDay(item.id, pd)}
-            onRemove={() => onRemoveItem(item.id)}
-          />
-        ))}
+            {section.items.map((item) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                days={days}
+                onToggle={() => onToggleItem(item.id)}
+                onUpdateQuantity={(qty) => onUpdateQuantity(item.id, qty)}
+                onUpdatePerDay={(pd) => onUpdatePerDay(item.id, pd)}
+                onUpdateDetails={(updates) => onUpdateItemDetails(item.id, updates)}
+                onRemove={() => onRemoveItem(item.id)}
+              />
+            ))}
 
-        {isAddingItem && (
-          <AddItemForm
-            onAdd={handleAddItem}
-            onCancel={() => setIsAddingItem(false)}
-          />
-        )}
-      </ul>
+            {isAddingItem && (
+              <AddItemForm
+                onAdd={handleAddItem}
+                onCancel={() => setIsAddingItem(false)}
+              />
+            )}
+          </ul>
 
-      {!isAddingItem && (
-        <button className="add-item-btn" onClick={() => setIsAddingItem(true)}>
-          <PlusIcon />
-          Add item
-        </button>
+          {!isAddingItem && (
+            <button className="add-item-btn" onClick={() => setIsAddingItem(true)}>
+              <PlusIcon />
+              Add item
+            </button>
+          )}
+        </>
       )}
     </section>
   );

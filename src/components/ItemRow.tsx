@@ -19,6 +19,7 @@ interface ItemRowProps {
   onToggle: () => void;
   onUpdateQuantity: (quantity: number) => void;
   onUpdatePerDay: (perDay: boolean) => void;
+  onUpdateDetails: (updates: { title?: string; description?: string }) => void;
   onRemove: () => void;
 }
 
@@ -28,14 +29,26 @@ export default function ItemRow({
   onToggle,
   onUpdateQuantity,
   onUpdatePerDay,
+  onUpdateDetails,
   onRemove,
 }: ItemRowProps) {
   const [displayQty, setDisplayQty] = useState(String(item.quantity));
   const [confirming, setConfirming] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(item.title);
+  const [editDesc, setEditDesc] = useState(item.description);
 
   useEffect(() => {
     setDisplayQty(String(item.quantity));
   }, [item.quantity]);
+
+  function commitEdit() {
+    const titleTrimmed = editTitle.trim();
+    if (titleTrimmed && titleTrimmed !== item.title) {
+      onUpdateDetails({ title: titleTrimmed, description: editDesc });
+    }
+    setEditing(false);
+  }
 
   return (
     <li
@@ -62,9 +75,54 @@ export default function ItemRow({
       </span>
 
       <span className="item__body">
-        <span className="item__title">{item.title}</span>
-        {item.description && (
-          <span className="item__desc">{item.description}</span>
+        {editing ? (
+          <div className="item__edit-form" onClick={(e) => e.stopPropagation()}>
+            <input
+              className="item__edit-input item__edit-input--title"
+              type="text"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              onBlur={commitEdit}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitEdit();
+                if (e.key === "Escape") {
+                  setEditTitle(item.title);
+                  setEditDesc(item.description);
+                  setEditing(false);
+                }
+              }}
+              autoFocus
+            />
+            <input
+              className="item__edit-input item__edit-input--desc"
+              type="text"
+              placeholder="Add description..."
+              value={editDesc}
+              onChange={(e) => setEditDesc(e.target.value)}
+              onBlur={commitEdit}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitEdit();
+                if (e.key === "Escape") {
+                  setEditTitle(item.title);
+                  setEditDesc(item.description);
+                  setEditing(false);
+                }
+              }}
+            />
+          </div>
+        ) : (
+          <>
+            <span
+              className="item__title"
+              onDoubleClick={() => setEditing(true)}
+              title="Double-click to edit"
+            >
+              {item.title}
+            </span>
+            {item.description && (
+              <span className="item__desc">{item.description}</span>
+            )}
+          </>
         )}
       </span>
 

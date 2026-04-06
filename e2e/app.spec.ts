@@ -112,15 +112,6 @@ test('can remove a section via the confirmation flow', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Bike Repair Kit' })).not.toBeVisible()
 })
 
-test('Reset clears all checked items', async ({ page }) => {
-  await page.getByText('Tape').first().click()
-  await page.getByText('Multi tool').first().click()
-  await expect(page.locator('.progress__label')).toContainText('2 /')
-
-  await page.getByRole('button', { name: 'Reset' }).click()
-  await expect(page.locator('.progress__label')).toContainText('0 /')
-})
-
 test('state persists across a page reload', async ({ page }) => {
   await page.getByText('Tape').first().click()
   await expect(page.locator('.progress__label')).toContainText('1 /')
@@ -189,4 +180,62 @@ test('can rename a list by double-clicking', async ({ page }) => {
   await input.blur()
   // Should show the new name
   await expect(page.getByRole('button', { name: 'My Renamed List' })).toBeVisible()
+})
+
+test('can collapse and expand sections', async ({ page }) => {
+  // Find the first section's collapse button
+  const collapseBtn = page.locator('.kit-section__collapse-btn').first()
+  const itemList = page.locator('.item-list').first()
+
+  // Items should be visible initially
+  await expect(itemList).toBeVisible()
+
+  // Click collapse button
+  await collapseBtn.click()
+
+  // Items should be hidden after collapse (wait for re-render)
+  await expect(page.locator('section').first()).not.toContainText('Tape')
+
+  // Click collapse button again to expand
+  await collapseBtn.click()
+
+  // Items should be visible again
+  await expect(page.locator('section').first()).toContainText('Tape')
+})
+
+test('can rename a section by double-clicking title', async ({ page }) => {
+  const sectionTitle = page.locator('.kit-section__title').first()
+
+  // Double-click to enter edit mode
+  await sectionTitle.dblclick()
+
+  // Should show an input
+  const input = page.locator('.kit-section__title-input').first()
+  await expect(input).toBeVisible()
+
+  // Edit the title
+  await input.fill('My Custom Section')
+  await input.blur()
+
+  // Should show the new title
+  await expect(page.locator('.kit-section__title').first()).toContainText('My Custom Section')
+})
+
+test('can edit item title', async ({ page }) => {
+  const itemRow = page.locator('.item').first()
+  const itemTitle = itemRow.locator('.item__title')
+
+  // Double-click to enter edit mode
+  await itemTitle.dblclick()
+
+  // Should show edit form
+  const titleInput = itemRow.locator('.item__edit-input--title')
+  await expect(titleInput).toBeVisible()
+
+  // Edit the title
+  await titleInput.fill('Duct Tape')
+  await titleInput.blur()
+
+  // Should show the new title
+  await expect(page.getByText('Duct Tape')).toBeVisible()
 })

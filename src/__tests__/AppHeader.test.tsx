@@ -9,7 +9,6 @@ function setup(overrides = {}) {
     onDaysChange: vi.fn(),
     checkedItems: 3,
     totalItems: 10,
-    onReset: vi.fn(),
     onExport: vi.fn(),
     onImport: vi.fn(),
     ...overrides,
@@ -50,13 +49,6 @@ describe('AppHeader', () => {
     await user.clear(input)
     await user.tab()
     expect(input).toHaveValue(7)
-  })
-
-  it('calls onReset when Reset is clicked', async () => {
-    const user = userEvent.setup()
-    const props = setup()
-    await user.click(screen.getByRole('button', { name: 'Reset' }))
-    expect(props.onReset).toHaveBeenCalled()
   })
 
   it('calls onExport when the export button is clicked', async () => {

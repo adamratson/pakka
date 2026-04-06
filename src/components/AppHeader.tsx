@@ -5,7 +5,6 @@ interface AppHeaderProps {
   onDaysChange: (days: number) => void;
   checkedItems: number;
   totalItems: number;
-  onReset: () => void;
   onExport: () => void;
   onImport: (file: File) => void;
 }
@@ -15,7 +14,6 @@ export default function AppHeader({
   onDaysChange,
   checkedItems,
   totalItems,
-  onReset,
   onExport,
   onImport,
 }: AppHeaderProps) {
@@ -56,9 +54,6 @@ export default function AppHeader({
           </span>
         </label>
         <div className="app-header__actions">
-          <button className="btn btn--ghost" onClick={onReset}>
-            Reset
-          </button>
           <button
             className="btn btn--ghost"
             onClick={() => fileInputRef.current?.click()}

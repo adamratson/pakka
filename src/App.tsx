@@ -156,6 +156,24 @@ export default function App() {
     }));
   }
 
+  function updateItemDetails(sectionId: string, itemId: string, updates: { title?: string; description?: string }) {
+    updateSection(sectionId, (s) => ({
+      ...s,
+      items: s.items.map((item) =>
+        item.id === itemId ? { ...item, ...updates } : item
+      ),
+    }));
+  }
+
+  function renameSection(sectionId: string, title: string) {
+    updateActiveList((list) => ({
+      ...list,
+      sections: list.sections.map((s) =>
+        s.id === sectionId ? { ...s, title } : s
+      ),
+    }));
+  }
+
   function addItem(sectionId: string, title: string, description: string) {
     const id = `item-${Date.now()}`;
     updateSection(sectionId, (s) => ({
@@ -187,16 +205,6 @@ export default function App() {
     updateActiveList((list) => ({
       ...list,
       sections: list.sections.filter((s) => s.id !== sectionId),
-    }));
-  }
-
-  function resetAll() {
-    updateActiveList((list) => ({
-      ...list,
-      sections: list.sections.map((s) => ({
-        ...s,
-        items: s.items.map((item) => ({ ...item, checked: false })),
-      })),
     }));
   }
 
@@ -262,7 +270,6 @@ export default function App() {
         onDaysChange={handleDaysChange}
         checkedItems={checkedCount}
         totalItems={allItems.length}
-        onReset={resetAll}
         onExport={() => exportToJson(lists, activeListId)}
         onImport={handleImport}
       />
@@ -289,9 +296,11 @@ export default function App() {
                 updateQuantity(section.id, itemId, qty)
               }
               onUpdatePerDay={(itemId, pd) => updatePerDay(section.id, itemId, pd)}
+              onUpdateItemDetails={(itemId, updates) => updateItemDetails(section.id, itemId, updates)}
               onAddItem={(title, desc) => addItem(section.id, title, desc)}
               onRemoveItem={(itemId) => removeItem(section.id, itemId)}
               onRemoveSection={() => removeSection(section.id)}
+              onRenameSection={(title) => renameSection(section.id, title)}
             />
           ))}
 

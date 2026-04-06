@@ -51,7 +51,7 @@
 }
 
 #root {
-  width: 760px;
+  width: 1200px;
   max-width: 100%;
   margin: 0 auto;
   border-inline: 1px solid var(--border);

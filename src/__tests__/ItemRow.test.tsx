@@ -21,6 +21,7 @@ function setup(overrides: Partial<KitItem> = {}, days = 7) {
     onToggle: vi.fn(),
     onUpdateQuantity: vi.fn(),
     onUpdatePerDay: vi.fn(),
+    onUpdateDetails: vi.fn(),
     onRemove: vi.fn(),
   }
   render(<ul><ItemRow {...props} /></ul>)
