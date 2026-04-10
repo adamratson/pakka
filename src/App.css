@@ -126,6 +126,7 @@
   height: fit-content;
   max-height: calc(100svh - var(--header-height, 0px));
   overflow-y: auto;
+  box-sizing: border-box;
 
   @media (max-width: 640px) {
     width: 100%;
